@@ -15,6 +15,7 @@ double SoilTemp = 0.0;
 double Humidity = 0.0;
 double Light = 0.0;
 int Moisture = 0;
+int tmillis = 0;
 
 unsigned long lastloop = 0;
 
@@ -44,18 +45,20 @@ void setup() {
     Spark.variable("Humidity", &Humidity, DOUBLE);
     Spark.variable("Light", &Light, DOUBLE);
     Spark.variable("Moisture", &Moisture, INT);
+    Spark.variable("Mills", &tmillis, INT);
 
     graph.fileopt = "extend";
     graph.log_level = 4;
-    graph.maxpoints = 2880;
+    graph.maxpoints = 288;
     graph.init();
     graph.openStream();
 }
 
 void loop() {
     unsigned long now = millis();
+    tmillis = (int)now;
 
-    if ((now - lastloop) > 30000){
+    if ((now - lastloop) > 300000){
       sensors_event_t event;
 
       tsl.getEvent(&event);

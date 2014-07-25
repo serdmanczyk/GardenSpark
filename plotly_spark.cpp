@@ -208,6 +208,7 @@ void plotly::openStream() {
     while ( !client.connect(server, port) ) {
         if(log_level < 4) Serial.println(F("... Couldn\'t connect to servers... trying again!"));
         fibonacci_ += fibonacci_;
+        SPARK_WLAN_Loop();
         delay(min(fibonacci_, 60000));
     }
     fibonacci_ = 1;
@@ -243,7 +244,6 @@ void plotly::reconnectStream(){
     while(!client.connected()){
         if(log_level<4) Serial.println(F("... Disconnected from streaming servers"));
         closeStream();
-        SPARK_WLAN_Loop();
         openStream();
     }
 }

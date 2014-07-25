@@ -1,0 +1,9 @@
+gardenspark.ino
+Adafruit_Sensor.cpp
+Adafruit_Sensor.h
+Adafruit_TSL2561_U.cpp
+Adafruit_TSL2561_U.h
+DHT.cpp
+DHT.h
+plotly_spark.h
+plotly_spark.cpp
