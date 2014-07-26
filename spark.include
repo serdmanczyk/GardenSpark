@@ -6,4 +6,5 @@ Adafruit_TSL2561_U.h
 DHT.cpp
 DHT.h
 plotly_spark.h
+plotly_defines.h
 plotly_spark.cpp

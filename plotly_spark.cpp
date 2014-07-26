@@ -236,6 +236,11 @@ char* plotly::dtostrf (double val, signed char width, unsigned char prec, char *
   return sout;
 }
 
+void plotly::heartbeat(){
+    if(client.connected()){
+        print_(F("\n"));
+    }
+}
 void plotly::closeStream(){
     print_(F("0\r\n\r\n"));
     client.stop();

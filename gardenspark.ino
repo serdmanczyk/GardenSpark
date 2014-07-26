@@ -1,4 +1,5 @@
 #include "plotly_spark.h"
+#include "plotly_defines.h"
 #include "math.h"
 #include "DHT.h"
 #include "Adafruit_TSL2561_U.h"
@@ -7,7 +8,11 @@
 #define MOISTPIN A1
 #define DHTPIN D4
 #define DHTTYPE DHT22
-#define n_tokens 5
+
+#define FIVE_MINUTES (5*60*1000)
+#define FIFTY_SECONDS (50*1000)
+
+// convert input volage reading to kelvin; 10mV = 1 K
 #define ANALOGKELVINCONVERSION 0.08056640625 // (3.3/4096)*100
 
 double Temp = 0.0;
@@ -15,13 +20,13 @@ double SoilTemp = 0.0;
 double Humidity = 0.0;
 double Light = 0.0;
 int Moisture = 0;
-int tmillis = 0;
 
 unsigned long lastloop = 0;
+unsigned long heartbeat = 0;
 
 // char Info[64];
-char *tokens[n_tokens] = {AIRTEMPTOK, HUMIDTOK, SOILTEMPTOK, MOISTURETOK, LIGHTTOK};
-plotly graph = plotly(USERNAME, APITOKEN, tokens, PLOTNAME, n_tokens);
+char *tokens[TOKENS] = {AIRTEMPTOK, HUMIDTOK, SOILTEMPTOK, MOISTURETOK, LIGHTTOK};
+plotly graph = plotly(USERNAME, APITOKEN, tokens, PLOTNAME, TOKENS);
 DHT dht(DHTPIN, DHTTYPE);
 Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified(TSL2561_ADDR_FLOAT, 42);
 
@@ -45,20 +50,19 @@ void setup() {
     Spark.variable("Humidity", &Humidity, DOUBLE);
     Spark.variable("Light", &Light, DOUBLE);
     Spark.variable("Moisture", &Moisture, INT);
-    Spark.variable("Mills", &tmillis, INT);
 
     graph.fileopt = "extend";
     graph.log_level = 4;
     graph.maxpoints = 288;
     graph.init();
     graph.openStream();
+    heartbeat = millis();
 }
 
 void loop() {
     unsigned long now = millis();
-    tmillis = (int)now;
 
-    if ((now - lastloop) > 300000){
+    if ((now - lastloop) > FIVE_MINUTES){
       sensors_event_t event;
 
       tsl.getEvent(&event);
@@ -68,29 +72,15 @@ void loop() {
       Moisture = map(analogRead(MOISTPIN), 0, 4096, 0, 330);
       SoilTemp = ((double)analogRead(TEMPPIN) * ANALOGKELVINCONVERSION) - 273.15;
 
-      // sprintf(Info, "Temperature=%.2fC", Temp);
-      // Serial.println(Info);
-      //
-      // sprintf(Info, "Soil Temperature=%.2fC", SoilTemp);
-      // Serial.println(Info);
-      //
-      // sprintf(Info, "Humidity=%.2f%%", Humidity);
-      // Serial.println(Info);
-      //
-      // sprintf(Info, "Light=%.2f Lux", Light);
-      // Serial.println(Info);
-      //
-      // sprintf(Info, "Moisture=%d", Moisture);
-      // Serial.println(Info);
-
       graph.plot(now, (float)Temp, tokens[0]);
       graph.plot(now, (float)Humidity, tokens[1]);
       graph.plot(now, (float)SoilTemp, tokens[2]);
       graph.plot(now, Moisture, tokens[3]);
       graph.plot(now, (float)Light, tokens[4]);
 
-      // sprintf(Info, "Elapsed=%d", millis()-start);
-      // Serial.println(Info);
       lastloop = now;
-    }
+  }else if((now-heartbeat) > FIFTY_SECONDS){
+      graph.heartbeat();
+      heartbeat = now;
+  }
 }

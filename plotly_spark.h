@@ -9,6 +9,7 @@ class plotly
         plotly(char *username, char *api_key, char* stream_tokens[], char *filename, int nTraces);
         TCPClient client;
         bool init();
+        void heartbeat();
         void openStream();
         void closeStream();
         void reconnectStream();
