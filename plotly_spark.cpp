@@ -252,6 +252,9 @@ void plotly::reconnectStream(){
         openStream();
     }
 }
+bool plotly::connected(){
+  return client.connected();
+}
 void plotly::jsonStart(int i){
     // Print the length of the message in hex:
     // 15 char for the json that wraps the data: {"x": , "y": }\n
@@ -298,6 +301,44 @@ int plotly::len_(unsigned long i){
 }
 int plotly::len_(char *i){
     return strlen(i);
+}
+void plotly::timeplot(int y, char *token){
+    reconnectStream();
+    char timestamp[20];
+
+    sprintf(timestamp, "%04d-%02d-%02d %02d:%02d:%02d.000",
+      Time.year(),
+      Time.month(),
+      Time.day(),
+      Time.hour(),
+      Time.minute(),
+      Time.second());
+
+    jsonStart(len_(timestamp)+len_(y));
+    print_(timestamp);
+    jsonMiddle();
+    print_(y);
+    jsonEnd(token);
+}
+void plotly::timeplot(float y, char *token){
+    reconnectStream();
+    char timestamp[20];
+    char s_[15];
+
+    sprintf(timestamp, "%04d-%02d-%02d %02d:%02d:%02d.000",
+      Time.year(),
+      Time.month(),
+      Time.day(),
+      Time.hour(),
+      Time.minute(),
+      Time.second());
+    dtostrf(y,2,3,s_);
+
+    jsonStart(len_(timestamp)+len_(s_)-1);
+    print_(timestamp);
+    jsonMiddle();
+    print_(y);
+    jsonEnd(token);
 }
 void plotly::plot(unsigned long x, int y, char *token){
     reconnectStream();

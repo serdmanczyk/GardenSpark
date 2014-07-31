@@ -9,6 +9,7 @@ class plotly
         plotly(char *username, char *api_key, char* stream_tokens[], char *filename, int nTraces);
         TCPClient client;
         bool init();
+        bool connected();
         void heartbeat();
         void openStream();
         void closeStream();
@@ -18,6 +19,8 @@ class plotly
         void jsonEnd(char *token);
         char* dtostrf (double val, signed char width, unsigned char prec, char *sout);
 
+        void timeplot(int y, char *token);
+        void timeplot(float y, char *token);
         void plot(unsigned long x, int y, char *token);
         void plot(unsigned long x, float y, char *token);
 
