@@ -74,14 +74,8 @@ void loop() {
         graph.plot(now, (float)Moisture, tokens[3]);
         graph.plot(now, (float)Light, tokens[4]);
 
-        sprintf(data, "[%03.03f,%03.03f]", AirTemp, SoilTemp);
-        Spark.publish("Temperature", data, 300, PRIVATE);
-
-        sprintf(data, "[%03.03f,%03.03f]", Humidity, Moisture);
-        Spark.publish("Moisture", data, 300, PRIVATE);
-
-        sprintf(data, "[%03.03f]", Light);
-        Spark.publish("Light", data, 300, PRIVATE);
+        sprintf(data, "[%03.03f,%03.03f,%03.03f,%03.03f,%03.03f]", AirTemp, SoilTemp, Humidity, Moisture, Light);
+        Spark.publish("Readings", data, 300, PRIVATE);
 
         lastloop = now;
     }else if((now - heartbeat) > FIFTY_SECONDS){
