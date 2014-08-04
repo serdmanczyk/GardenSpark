@@ -1,8 +1,8 @@
 var request = require('request');
 var extend = require('xtend');
-var database = require('./spark_db');
+var database = require('./db');
 var plotter = require('./plotter');
-var sparkinfo = require('./spark_config');
+var sparkinfo = require('./config').spark;
 
 var requestObj;
 var chunks = [];

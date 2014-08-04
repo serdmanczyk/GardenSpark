@@ -1,0 +1,16 @@
+{
+    "name": "GardenSpark",
+    "version": "0.0.1",
+    "engines": {
+        "node": ">= 0.6.0",
+        "npm": ">= 1.0.0"
+    },
+    "dependencies": {
+        "xtend": ">= 3.0.0",
+        "sqlite3": ">= 2.2.4",
+        "request": ">= 2.39.0",
+        "plotly": ">= 0.2.13"
+    },
+    "main": "server.js",
+    "private": true
+}

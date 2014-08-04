@@ -1,4 +1,4 @@
-var config = require('./plotly_config')
+var config = require('./config').plotly
  , plotly = require('plotly')(config['username'], config['apitoken'])
  , maxpoints = 12960
  , initData = [
@@ -8,7 +8,7 @@ var config = require('./plotly_config')
     {x:[],y:[],stream:{token:config['moisturetok'],maxpoints:maxpoints}},
     {x:[],y:[],stream:{token:config['lighttok'],maxpoints:maxpoints}}
   ]
- , initGraphOptions = {fileopt : "overwrite", filename : "GardenSpark"};
+ , initGraphOptions = {fileopt : config['fileopt'], filename : config['filename']};
 
 // little helper function to get a nicely formatted date string
 function getDateString (){
