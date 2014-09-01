@@ -1,0 +1,13 @@
+extend layout
+block content
+    pre#title  #{title}
+    table
+        tbhead
+            tr
+                for reading in readings
+                    th #{reading.name}
+        tbody
+            tr
+                for reading in readings
+                    td #{reading.value}
+    p#interval plot interval: #{interval}ms

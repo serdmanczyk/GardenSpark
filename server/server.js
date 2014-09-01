@@ -1,53 +1,121 @@
 "use strict"
-var SparkParser = require('./SparkParser'),
+var SparkCloud = require('./SparkCloud'),
     plotter = require('./plotter'),
-    mongo = require('./db_mongo'),
+    db = require('./db_mongo'),
     config = require('./config'),
-    http = require('http'),
+    DataCache = require('./DataCache'),
     url = require('url'),
-    port = process.env.OPENSHIFT_NODEJS_PORT || 8080 ,
+    figlet = require('figlet'),
+    express = require('express'),
+    morgan = require('morgan'),
+    _ = require('underscore'),
+    app = express();
+
+var port = process.env.OPENSHIFT_NODEJS_PORT || 8080 ,
     ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 
-var SparkCloud = new SparkParser({}, config.spark);
-var mong = new mongo();
-var plotter = new plotter(config.plotly);
+var SparkCloud = new SparkCloud({}, config.spark),
+    plotter = new plotter(config.plotly),
+    cache = new DataCache(),
+    name = figlet.textSync("GardenSpark");
+
+cache.setEmitInterval(66667);  //  Fill plot every 24 hrs
 
 SparkCloud.init(function(){
     console.log("SparkCloud connection initialized");
-})
+});
 
-mong.init(function(){
-    console.log("database connection initialized");
-    mong.updateBadTimeStamps();
-    SparkCloud.on('data', function(data){
-        mong.insert(data)
-    });
+SparkCloud.on('data', function(data){
+    db.insert(data);
+    cache.append(data);
 });
 
 plotter.init(function(plot){
     console.log("plotly initialized");
-    SparkCloud.on('data', function(data){
+    cache.on('interval',function(data){
         plot(data);
     });
 });
 
-http.createServer(function (req, res) {
-    if (req.method == "GET"){
-        var u = url.parse(req.url, true);
 
-        if (u.pathname === "/favicon.ico"){
-            res.writeHead(404, {'Content-Type': 'text/plain'});
-            res.end("Nope");
-            return;
+app.use(morgan('dev'));
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
+app.use(express.static(__dirname + '/public'))
+
+app.get('/', function(req,res){
+    db.getLatest(function(data){
+        if (req.headers['content-type'] === 'application/json'){
+            res.send(JSON.stringify(data));
+        }else{
+            data.TimeStamp = (new Date(data.TimeStamp));
+            var rs = _.map(data, function(v,k,l){
+                    return {name:k,value:v};
+                });
+            res.render('index',{
+                title:name,
+                readings:rs,
+                interval:cache.timeout.toString()
+            });
         };
 
-        // console.log(u.query);
-        res.writeHead(200, {'Content-Type': 'text/plain'});
-        mong.getReadings(function(readings){
-            res.end(readings);
-        });
-        return;
+    });
+});
+
+app.get('/readings', function(req, res){
+    function DateDefault(date, defaultdate) {
+        var attempt = new Date(date);
+
+        if (attempt.toString() !== "Invalid Date"){
+            return attempt;
+        }else{
+            if (defaultdate === Infinity){
+                return new Date();
+            }else{
+                return new Date(defaultdate)
+            };
+        };
     };
-    res.writeHead(404, {'Content-Type': 'text/plain'});
-    res.end('resource does not exist');
-}).listen(port, ip);
+
+    var startDate = DateDefault(req.query.start, 0),
+        endDate = DateDefault(req.query.end, Infinity);
+
+    db.getReadings(startDate, endDate, function(results){
+        if (req.headers['content-type'] === 'application/json'){
+            res.send(JSON.stringify(results));
+        }else{
+            var ret = {
+                title:name,
+                readings:results || []
+            };
+            res.render('readings',ret);
+        };
+    });
+});
+
+app.get('/interval', function(req, res){
+    function ParsetoMsValue(parameter, conversion){
+        if (parameter !== undefined){
+            var i = Number(parameter);
+
+            if (i !== NaN){
+                return i*conversion;
+            }
+        }
+
+        return 0;
+    };
+
+    var hours = ParsetoMsValue(req.query.hours || 0, 3600000),
+        minutes = ParsetoMsValue(req.query.minutes || 0, 60000),
+        seconds = ParsetoMsValue(req.query.seconds || 0, 1000),
+        adjustment = seconds + minutes + hours;
+
+    if (adjustment > 1000){
+        cache.setEmitInterval(seconds + minutes + hours);
+    };
+
+    res.redirect('/');
+});
+
+app.listen(port, ip);

@@ -1,0 +1,19 @@
+extend layout
+block content
+    pre#title  #{title}
+    table
+        tbhead
+            tr
+                th TimeStamp
+                th Air Temperature
+                th Soil Temperature
+                th Humidity
+                th Light
+        tbody
+            for reading in readings
+                tr
+                    td #{reading.TimeStamp}
+                    td #{reading["Air Temperature"]}
+                    td #{reading["Soil Temperature"]}
+                    td #{reading.Humidity}
+                    td #{reading.Light}

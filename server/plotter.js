@@ -1,5 +1,5 @@
 "use strict"
-var _ = require('underscore');
+var util = require('util');
 
 var Plotter = function plotter(config){
     this.config = config;
@@ -29,35 +29,49 @@ Plotter.prototype.init = function init(done){
     });
 
     plotly.plot(plots, options, function(err, msg){
-      if (err) {throw err}
+        if (err) {throw err;}
 
-      var Streams = {};
-      config.plots.forEach(function(plot){
-        var newstream = plotly.stream(plot.token, function(err, res){
-            if (err) {throw err;}
-
-            console.log("Started stream: " + plot.name)
+        var Streams = {};
+        config.plots.forEach(function(plot){
+            var newstream = plotly.stream(plot.token, function(res){
+                throw new Error(util.format('Failed starting stream %s: [%s] [%s]',
+                    plot.name,
+                    res.msg,
+                    res.statusCode
+                ));
         });
         Streams[plot.name] = newstream;
-      });
+    });
 
-      function plot(Data){
-        for (var key in Data){
-            if (key in Streams){
-                var dataObj = {
-                        x:Data.TimeStamp
-                            .replace(/T/, ' ')
-                            .replace(/Z/, ''),
-                            y:Data[key]
-                        },
-                    datastring = JSON.stringify(dataObj);
-
-                Streams[key].write(datastring + "\n")
+        function heartbeat(){
+            console.log("plotly heartbeat: " + (new Date()).toISOString());
+            for (var key in Streams){
+                Streams[key].write('\n');
             };
         };
-      };
 
-      done(plot);
+        var interval = setInterval(heartbeat,59000);
+        function plot(data){
+            console.log("plot data: " + data.TimeStamp);
+            for (var key in data){
+                if (key in Streams){
+                    var dataObj = {
+                            x:data.TimeStamp
+                                .replace(/T/, ' ')
+                                .replace(/Z/, ''),
+                            y:data[key]
+                        },
+                        datastring = JSON.stringify(dataObj);
+
+                    Streams[key].write(datastring + "\n");
+                };
+            };
+
+            clearInterval(interval);
+            interval = setInterval(heartbeat, 59000);
+        };
+
+        done(plot);
     });
 };
 

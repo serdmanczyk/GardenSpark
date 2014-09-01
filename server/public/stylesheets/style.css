@@ -1,0 +1,27 @@
+body
+{
+	background: #111;
+	font-family: Courier;
+	font-size: 13px;
+	color: #3c3;
+}
+#title
+{
+	margin-top: 100px;
+	text-align: center;
+}
+#container
+{
+	width: 740px;
+	display: block;
+}
+#readings
+{
+	margin-top: 10px;
+	text-align: center;
+	font-size: 17px;
+}
+#interval
+{
+	text-align: center;
+}
