@@ -72,7 +72,7 @@ bool plotly::init(){
     print_(F("\r\n\r\n"));
 
     // Start printing querystring body
-    print_(F("version=2.2&origin=plot&platform=arduino&un="));
+    print_(F("version=2.3&origin=plot&platform=arduino&un="));
     print_(username_);
     print_(F("&key="));
     print_(api_key_);
@@ -229,18 +229,6 @@ void plotly::openStream() {
     if(log_level < 3){} Serial.println(F("... Done initializing, ready to stream!"));
 }
 
-char* plotly::dtostrf (double val, signed char width, unsigned char prec, char *sout) {
-  char fmt[20];
-  sprintf(fmt, "%%%d.%df", width, prec);
-  sprintf(sout, fmt, val);
-  return sout;
-}
-
-void plotly::heartbeat(){
-    if(client.connected()){
-        print_(F("\n"));
-    }
-}
 void plotly::closeStream(){
     print_(F("0\r\n\r\n"));
     client.stop();
@@ -335,7 +323,18 @@ void plotly::print_(char *d){
     if(log_level < 2) Serial.print(d);
     if(!dry_run) client.print(d);
 }
-/*void plotly::print_(const __FlashStringHelper* d){
+/*
+void plotly::print_(const __FlashStringHelper* d){
     if(log_level < 2) Serial.print(d);
     if(!dry_run) client.print(d);
-}*/
+}
+*/
+
+//convert double to ascii
+char *plotly::dtostrf (double val, signed char width, unsigned char prec, char *sout) {
+  char fmt[20];
+  sprintf(fmt, "%%%d.%df", width, prec);
+  sprintf(sout, fmt, val);
+  return sout;
+}
+
