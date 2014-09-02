@@ -6,7 +6,6 @@
         "npm": ">= 1.0.0"
     },
     "dependencies": {
-        "sqlite3": ">= 2.2.4",
         "request": ">= 2.39.0",
         "plotly": ">= 0.2.13",
         "eventsource": ">= 0.1.2",

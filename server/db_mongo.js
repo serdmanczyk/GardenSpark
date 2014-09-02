@@ -26,10 +26,14 @@ exports.insert = function insert(Data){
 };
 
 exports.getReadings = function getReadings(start, end, callback){
+    function validDate(dateStr, def){
+        return (Date(dateStr) !== "Invalid Date") ? new Date(dateStr) : new Date(def);
+    };
+
     var query = {
             TimeStamp:{
-                $gt:(start.toISOString()),
-                $lt:(end.toISOString())
+                $gt:(validDate(start, 0).toISOString()),
+                $lt:(validDate(end, Date.now()).toISOString())
             }
         },
         results = [];

@@ -40,10 +40,11 @@ SparkCloud.prototype.init = function init(done){
     }, false);
 
     es.onerror = function(){
-        console.log("error with EventSource connection with SparkCloud");
+        console.log("Error with EventSource connection with SparkCloud");
     };
 
     self.es = es;
+    done();
 };
 
 module.exports = SparkCloud;

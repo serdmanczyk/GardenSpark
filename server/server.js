@@ -32,7 +32,7 @@ SparkCloud.on('data', function(data){
 
 plotter.init(function(plot){
     console.log("plotly initialized");
-    cache.on('interval',function(data){
+    cache.on('interval', function(data){
         plot(data);
     });
 });
@@ -63,56 +63,40 @@ app.get('/', function(req,res){
 });
 
 app.get('/readings', function(req, res){
-    function DateDefault(date, defaultdate) {
-        var attempt = new Date(date);
+        var n = Date.now(),
+            all = (req.query.all ? true : false),
+            startDate = (req.query.start || 0),
+            endDate = (req.query.end || n);
 
-        if (attempt.toString() !== "Invalid Date"){
-            return attempt;
-        }else{
-            if (defaultdate === Infinity){
-                return new Date();
-            }else{
-                return new Date(defaultdate)
-            };
-        };
+    if (startDate === 0 && endDate === n && !all    ){
+        endDate = Date.now();
+        startDate = endDate - 300000; // Five minutes ago
+    }else if (all){
+        endDate = Date    .now();
+        startDate = 0;
     };
 
-    var startDate = DateDefault(req.query.start, 0),
-        endDate = DateDefault(req.query.end, Infinity);
-
-    db.getReadings(startDate, endDate, function(results){
-        if (req.headers['content-type'] === 'application/json'){
+    db.getReadings(startDate, endDate, function(results) {
+        if (req.headers['content-type'] === 'application/json') {
             res.send(JSON.stringify(results));
         }else{
             var ret = {
                 title:name,
                 readings:results || []
             };
-            res.render('readings',ret);
+            res.render('readings', ret);
         };
     });
 });
 
 app.get('/interval', function(req, res){
-    function ParsetoMsValue(parameter, conversion){
-        if (parameter !== undefined){
-            var i = Number(parameter);
-
-            if (i !== NaN){
-                return i*conversion;
-            }
-        }
-
-        return 0;
-    };
-
-    var hours = ParsetoMsValue(req.query.hours || 0, 3600000),
-        minutes = ParsetoMsValue(req.query.minutes || 0, 60000),
-        seconds = ParsetoMsValue(req.query.seconds || 0, 1000),
+    var hours = (Number(req.query.hours) || 0) * 3600000,
+        minutes = (Number(req.query.minutes) || 0) * 60000,
+        seconds = (Number(req.query.seconds) || 0) * 1000,
         adjustment = seconds + minutes + hours;
 
     if (adjustment > 1000){
-        cache.setEmitInterval(seconds + minutes + hours);
+        cache.setEmitInterval(adjustment);
     };
 
     res.redirect('/');
