@@ -338,3 +338,7 @@ char *plotly::dtostrf (double val, signed char width, unsigned char prec, char *
   return sout;
 }
 
+void plotly::heartbeat(){
+  if(log_level < 2) Serial.print('\n');
+  if(!dry_run) client.print('\n');
+}
