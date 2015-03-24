@@ -38,7 +38,8 @@ void loop() {
         AirTemp = (double)dht.readTemperature();
         Humidity = (double)dht.readHumidity();
         Moisture = ((double)map(analogRead(MOISTPIN), 0, 4096, 0, 330) / 100);  // convert to voltage
-        SoilTemp = ((double)analogRead(TEMPPIN) * ANALOGKELVINCONVERSION) + KELVINCELSIUSCONVERSION;
+        // SoilTemp = ((double)analogRead(TEMPPIN) * ANALOGKELVINCONVERSION) + KELVINCELSIUSCONVERSION;
+        SoilTemp = ((double)map(analogRead(TEMPPIN), 0, 4096, 0, 330) - 273.15);
 
         sprintf(data, "[%03.03f,%03.03f,%03.03f,%03.03f,%03.03f]", AirTemp, SoilTemp, Humidity, Moisture, Light);
         Spark.publish("Readings", data, 300, PRIVATE);

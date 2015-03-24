@@ -1,11 +1,25 @@
 doctype
-html
-    head
-        title GardenSpark
-        link(rel='stylesheet', href='/stylesheets/style.css')
-    body
-        #container
+html(ng-app="gardenSpark")
+  head
+    meta(charset='utf8')
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    base(href='/')
+    title GardenSpark
+    link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css')
+    link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css')
+    link(rel="stylesheet", href="/stylesheets/style.css")
+  body
+    .container
+        .internalcontainer
+            pre#title  #{title}
             block content
 
-        script(type='text/javascript' src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
-        script(type='text/javascript' src='/scripts/center.js')
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+    script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js')
+    script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js')
+    script(src="//d3js.org/d3.v3.min.js" charset="utf-8")
+    script(src='/scripts/moment.min.js')
+    script(src='/scripts/line-chart.min.js')
+    script(src='/scripts/app.js')
+    script(src='/scripts/controllers.js')

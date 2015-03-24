@@ -1,13 +1,20 @@
 extend layout
+
 block content
-    pre#title  #{title}
-    table
-        tbhead
-            tr
-                for reading in readings
-                    th #{reading.name}
-        tbody
-            tr
-                for reading in readings
-                    td #{reading.value}
-    p#interval plot interval: #{interval}ms
+    div(ng-controller="indexController")
+        table.table
+            tbhead
+                th(data-field="timestamp") TimeStamp
+                th(data-field="airtemp") Air Temperature
+                th(data-field="soiltemp") Soil Temperature
+                th(data-field="humidity") Humidity
+                th(data-field="soilmoist") Soil Moisture
+                th(data-field="light") Light
+            tbody
+                tr
+                    td {{reading.timestamp | date:'medium'}}
+                    td {{reading.airtemp}}
+                    td {{reading.soiltemp}}
+                    td {{reading.humidity}}
+                    td {{reading.soilmoist}}
+                    td {{reading.light}}
