@@ -1,20 +1,87 @@
-extend layout
+doctype
+html(ng-app="gardenSpark")
+	head
+		meta(charset="utf-8")
 
-block content
-    div(ng-controller="indexController")
-        table.table
-            tbhead
-                th(data-field="timestamp") TimeStamp
-                th(data-field="airtemp") Air Temperature
-                th(data-field="soiltemp") Soil Temperature
-                th(data-field="humidity") Humidity
-                th(data-field="soilmoist") Soil Moisture
-                th(data-field="light") Light
-            tbody
-                tr
-                    td {{reading.timestamp | date:'medium'}}
-                    td {{reading.airtemp}}
-                    td {{reading.soiltemp}}
-                    td {{reading.humidity}}
-                    td {{reading.soilmoist}}
-                    td {{reading.light}}
+		title GardenSpark
+
+		meta(name="description" content="DIY home garden sensor!")
+		meta(name="author" content="Steven James Erdmanczyk Jr.")
+
+		meta(name="apple-mobile-web-app-capable" content="yes")
+		meta(name="apple-mobile-web-app-status-bar-style" content="black-translucent")
+
+		meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui")
+
+		link(rel="stylesheet" href="stylesheets/reveal.css")
+		link(rel="stylesheet" href="stylesheets/theme/sky.css" id="theme")
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="stylesheets/zenburn.css">
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	body
+		.reveal
+			.slides
+				section(ng-controller="latestController")
+					h2 GardenSpark
+					pre
+						| ---
+						|	Timestamp: "{{reading.timestamp | date:'medium'}}"
+						|	Air_Temperature: {{reading.airtemp}}
+						|	Soil_Temperature: {{reading.soiltemp}}
+						|	Humidity: {{reading.humidity}}
+						|	Soil_Moisture: {{reading.soilmoist}}
+						|	Light: {{reading.light}}
+
+				section(ng-controller="readingsController")
+					section
+						h2 Temperature / Humidity
+						input(type="datetime-local" ng-model="startDate")
+						input(type="datetime-local" ng-model="endDate")
+
+						button(ng-click="refresh()") refresh
+							span(class="glyphicon glyphicon-leaf", aria-hidden="true")
+						linechart(data="readings" options="airhumoptions" mode="" width="700" height="400" style="background-color:white")
+
+					section
+						h2 Soil Moisture / Light
+						
+						linechart(data="readings" options="moistlightoptions" mode="" width="700" height="400" style="background-color:white")
+
+		//- script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+		//- script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js')
+		script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js')
+		script(src="//d3js.org/d3.v3.min.js" charset="utf-8")
+		script(src='/scripts/moment.min.js')
+		script(src='/scripts/line-chart.min.js')
+		script(src='/scripts/app.js')
+		script(src='/scripts/controllers.js')
+		script(src="scripts/head.min.js")
+		script(src="scripts/reveal.js")
+
+		script(type='text/javascript').
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+				loop: true,
+
+				transition: 'convex', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					// { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					// { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					// { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'scripts/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					// { src: 'plugin/zoom-js/zoom.js', async: true },
+					// { src: 'plugin/notes/notes.js', async: true }
+				]
+			});

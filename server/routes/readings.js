@@ -1,7 +1,9 @@
 "use strict"
 var incl = require('../includes'),
     db = incl.db,
-    _ = incl._;
+    _ = incl._,
+    spewer = incl.spewer,
+    readings_secret = incl.secrets.readings_secret;
     
 var router = module.exports = incl.express.Router();
 
@@ -21,20 +23,12 @@ router.get('/', function(req, res){
     };
 
     db.getReadings(startDate, endDate, function(results) {
-        if (req.headers['content-type'] === 'application/json') {
-            res.json(results);
-        }else{
-            var ret = {
-                title:incl.name,
-                readings:results || []
-            };
-            res.render('readings', ret);
-        };
+        res.json(results);
     }, smoothing);
 });
 
 router.post('/', function(req,res){
-    if (req.body.magicpasscode && req.body.magicpasscode == "hotdogbuns") {
+    if (req.body.magicpasscode && req.body.magicpasscode == readings_secret) {
         var readings = JSON.parse(req.body.data),
             sparkData = {
                 "timestamp": req.body.published_at,
@@ -45,6 +39,7 @@ router.post('/', function(req,res){
                 "light": readings[4]
             };
 
+        spewer.emit('data', sparkData);
         db.insert(sparkData);
     }
 

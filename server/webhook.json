@@ -1,0 +1,12 @@
+{
+    "eventName": "Readings",
+    "url": "https://gardenspark-evargreen.rhcloud.com/readings",
+    "requestType": "POST",
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "json": {
+        "magicpasscode" : "XXX___SECRET___XXX"
+    },
+    "mydevices": true
+}
