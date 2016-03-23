@@ -1,6 +1,8 @@
 GardenSpark
 ==============
 
+  DISCLAIMER: This project is under re-construction.  This repository still exists for reference.
+
 Source code for my 'GardenSpark' project.  
 
 Live website: [http://gardenspark-evargreen.rhcloud.com/][gardenspark]
