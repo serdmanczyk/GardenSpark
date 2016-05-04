@@ -46,7 +46,7 @@ void setup() {
     pinMode(MOISTPIN, INPUT);
     pinMode(TEMPPIN, INPUT);
     Spark.variable("Temperature", &Temp, DOUBLE);
-    Spark.variable("SoilTemperature", &SoilTemp, DOUBLE);
+    Spark.variable("SoilTemp", &SoilTemp, DOUBLE);
     Spark.variable("Humidity", &Humidity, DOUBLE);
     Spark.variable("Light", &Light, DOUBLE);
     Spark.variable("Moisture", &Moisture, INT);
